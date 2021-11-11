@@ -1,48 +1,48 @@
-# terraform-azurerm-kubernetes
+# terraform-azurerm-databricks
 
-[![Terraform](https://github.com/imjoseangel/terraform-azurerm-kubernetes/actions/workflows/terraform.yml/badge.svg)](https://github.com/imjoseangel/terraform-azurerm-kubernetes/actions/workflows/terraform.yml)
+[![Terraform](https://github.com/imjoseangel/terraform-azurerm-databricks/actions/workflows/terraform.yml/badge.svg)](https://github.com/imjoseangel/terraform-azurerm-databricks/actions/workflows/terraform.yml)
 
-## Deploys a Kubernetes cluster on AKS with application gateway support. Monitoring support can be added through Azure Log Analytics
+## Deploys a databricks cluster on dbw with application gateway support. Monitoring support can be added through Azure Log Analytics
 
-This Terraform module deploys a Kubernetes cluster on Azure using AKS (Azure Kubernetes Service)
+This Terraform module deploys a databricks cluster on Azure using dbw (Azure databricks Service)
 
 ### NOTES
 
 * A SystemAssigned identity will be created by default.
-* Kubernetes Version is set to Current.
+* databricks Version is set to Current.
 * Role Based Access Control is always enabled.
 
 ## Usage in Terraform 1.0
 
 ```terraform
-data "azurerm_resource_group" "aksvnetrsg" {
-  name = "vnetrsg-aks"
+data "azurerm_resource_group" "dbwvnetrsg" {
+  name = "vnetrsg-dbw"
 }
 
-data "azurerm_virtual_network" "aksvnet" {
-  name                = "vnet-aks"
-  resource_group_name = data.azurerm_resource_group.aksvnetrsg.name
+data "azurerm_virtual_network" "dbwvnet" {
+  name                = "vnet-dbw"
+  resource_group_name = data.azurerm_resource_group.dbwvnetrsg.name
 }
 
-resource "azurerm_subnet" "akssubnet" {
-  name                 = "subnet-aksnodes"
-  resource_group_name  = data.azurerm_resource_group.aksvnetrsg.name
-  virtual_network_name = data.azurerm_virtual_network.aksvnet.name
+resource "azurerm_subnet" "dbwsubnet" {
+  name                 = "subnet-dbwnodes"
+  resource_group_name  = data.azurerm_resource_group.dbwvnetrsg.name
+  virtual_network_name = data.azurerm_virtual_network.dbwvnet.name
   address_prefixes     = ["10.100.10.0/24"]
 }
 
-module "aks" {
-  source                    = "github.com/imjoseangel/terraform-azurerm-kubernetes"
-  name                      = "aksname"
-  resource_group_name       = "rsg-aks"
+module "dbw" {
+  source                    = "github.com/imjoseangel/terraform-azurerm-databricks"
+  name                      = "dbwname"
+  resource_group_name       = "rsg-dbw"
   location                  = "westeurope"
-  prefix                    = "aksdns"
+  prefix                    = "dbwdns"
   sku_tier                  = "Free"
   create_resource_group     = true
   oms_agent_enabled         = false
   agents_availability_zones = ["1", "2"]
   private_cluster_enabled   = false # default value
-  vnet_subnet_id            = azurerm_subnet.akssubnet.id
+  vnet_subnet_id            = azurerm_subnet.dbwsubnet.id
   create_ingress            = true # defaults to false
   gateway_id                = azurerm_application_gateway.appgateway.id # id of the application gw for ingress
   enable_auto_scaling       = true
@@ -50,22 +50,22 @@ module "aks" {
   min_default_node_count    = 1
 }
 
-resource "azurerm_role_assignment" "aks_resource_group" {
-  scope                = data.azurerm_resource_group.aksvnetrsg.id
+resource "azurerm_role_assignment" "dbw_resource_group" {
+  scope                = data.azurerm_resource_group.dbwvnetrsg.id
   role_definition_name = "Network Contributor"
-  principal_id         = module.aks.system_assigned_identity[0].principal_id
+  principal_id         = module.dbw.system_assigned_identity[0].principal_id
 }
 ```
 
-The module supports some outputs that may be used to configure a kubernetes
-provider after deploying an AKS cluster.
+The module supports some outputs that may be used to configure a databricks
+provider after deploying an dbw cluster.
 
 ```terraform
-provider "kubernetes" {
-  host                   = module.aks.host
-  client_certificate     = base64decode(module.aks.client_certificate)
-  client_key             = base64decode(module.aks.client_key)
-  cluster_ca_certificate = base64decode(module.aks.cluster_ca_certificate)
+provider "databricks" {
+  host                   = module.dbw.host
+  client_certificate     = base64decode(module.dbw.client_certificate)
+  client_key             = base64decode(module.dbw.client_key)
+  cluster_ca_certificate = base64decode(module.dbw.cluster_ca_certificate)
 }
 ```
 
