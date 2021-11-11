@@ -22,3 +22,27 @@ variable "tags" {
   type        = map(string)
   default     = {}
 }
+
+variable "workspace_name" {
+  type        = string
+  description = "Name of Databricks workspace"
+  default     = "dbw-workspace"
+}
+
+variable "sku_tier" {
+  description = "The SKU that should be used for this Databricks Cluster. Possible values are standard and premium"
+  type        = string
+  default     = "standard"
+}
+
+variable "private_subnet_name" {
+  type        = string
+  description = "Name of the private subnet"
+  default     = null
+}
+
+variable "vnet_id" {
+  type        = string
+  description = "ID of existing virtual network into which Databricks will be deployed"
+  default     = null
+}

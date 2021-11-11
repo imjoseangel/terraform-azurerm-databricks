@@ -23,3 +23,22 @@ resource "azurerm_resource_group" "rg" {
   location = var.location
   tags     = merge({ "ResourceName" = format("%s", var.resource_group_name) }, var.tags, )
 }
+
+#---------------------------------------------------------
+# Databricks Creation or selection
+#---------------------------------------------------------
+
+resource "azurerm_databricks_workspace" "main" {
+  name                = var.workspace_name
+  resource_group_name = var.resource_group_name
+  location            = local.location
+  sku                 = var.sku_tier
+
+  custom_parameters {
+    no_public_ip        = true
+    private_subnet_name = var.private_subnet_name
+    virtual_network_id  = var.vnet_id
+  }
+
+  tags = var.tags
+}
