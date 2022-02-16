@@ -40,6 +40,4 @@ resource "azurerm_databricks_workspace" "main" {
     private_subnet_name = var.private_subnet_name
     virtual_network_id  = var.vnet_id
   }
-
-
 }
