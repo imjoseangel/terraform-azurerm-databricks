@@ -8,6 +8,10 @@ locals {
 
 data "azurerm_client_config" "current" {}
 
+data "external" "env" {
+  program = ["jq", "-n", "env"]
+}
+
 #---------------------------------------------------------
 # Resource Group Creation or selection - Default is "true"
 #---------------------------------------------------------
