@@ -25,6 +25,7 @@ variable "managed_resource_group_name" {
 variable "location" {
   description = "The location/region to keep all your resources. To get the list of all locations with table format from azure cli, run 'az account list-locations -o table'"
   default     = "westeurope"
+  type        = string
 }
 
 variable "tags" {

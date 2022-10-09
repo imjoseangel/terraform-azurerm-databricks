@@ -28,7 +28,7 @@ resource "azurerm_resource_group" "rg" {
 
 resource "azurerm_databricks_workspace" "main" {
   name                        = var.name
-  resource_group_name         = var.resource_group_name
+  resource_group_name         = local.resource_group_name
   managed_resource_group_name = var.managed_resource_group_name
   location                    = local.location
   sku                         = var.sku_tier
