@@ -36,9 +36,10 @@ resource "azurerm_databricks_workspace" "main" {
   sku                                   = var.sku_tier
   tags                                  = var.tags
   custom_parameters {
-    no_public_ip         = true
-    private_subnet_name  = var.private_subnet_name
-    virtual_network_id   = var.vnet_id
-    storage_account_name = var.storage_account_name
+    no_public_ip             = true
+    private_subnet_name      = var.private_subnet_name
+    virtual_network_id       = var.vnet_id
+    storage_account_name     = var.storage_account_name
+    storage_account_sku_name = var.storage_account_sku_name
   }
 }
